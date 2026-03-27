@@ -163,4 +163,19 @@ nav a:hover { opacity: 1; color: var(--primary); }
 .text-focus-in { animation: text-focus-in 1s cubic-bezier(0.550, 0.085, 0.680, 0.530) infinite alternate both; }
 @keyframes text-focus-in { 0% { filter: blur(2px); opacity: 0.5; } 100% { filter: blur(0px); opacity: 1; } }
 
-@media (max-width: 900px) { .analysis-layout, .hero-section { flex-direction: column; } .hero-section { padding-top: 150px; text-align: center; } .hero-content h1 { font-size: 2.5rem; } .hero-buttons { justify-content: center; } .metric-card, .alert-card { display: none; } .chatbot-widget { bottom: 20px; right: 20px; } .chat-window { width: 300px; height: 400px; } }
+@media (max-width: 900px) {
+    .glass-header { flex-direction: column; padding: 15px 5%; height: auto; gap: 15px; }
+    nav ul { gap: 15px; flex-wrap: wrap; justify-content: center; }
+    .hero-section { flex-direction: column; padding-top: 180px; text-align: center; }
+    .hero-content h1 { font-size: 2.2rem; margin-bottom: 15px; }
+    .hero-buttons { justify-content: center; gap: 10px; flex-wrap: wrap; }
+    .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+    .metric-card, .alert-card { display: none; }
+    .analysis-layout { flex-direction: column; }
+    .sidebar { width: 100%; border-right: none; padding-right: 0; padding-bottom: 20px; }
+    .metrics-grid { grid-template-columns: 1fr; }
+    .highlight-metric { grid-column: span 1; flex-direction: column; gap: 10px; align-items: flex-start; }
+    .chatbot-widget { bottom: 15px; right: 15px; }
+    .chat-window { width: calc(100vw - 30px); max-width: 350px; height: 450px; right: 0; }
+    #pdf-container, #printable-report { width: 100% !important; padding: 15px !important; }
+}
