@@ -4,18 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MicroResilience AI | İklim Krizine Karşı Toprak Analizi</title>
-    
+    <meta name="description" content="Yapay zeka destekli toprak mikrobiyomu analiz platformu. İklim değişikliğine karşı toprağınızın direncini keşfedin.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+    <!-- Hareketli Arka Plan -->
+    <canvas id="bgCanvas"></canvas>
 
     <!-- Header -->
     <header class="glass-header">
@@ -29,30 +34,52 @@
                 <li><a href="#" onclick="navigateTo('analysis')">Analiz Paneli</a></li>
             </ul>
         </nav>
-        <button class="btn-primary" onclick="navigateTo('analysis')">Hemen Başla</button>
+        <button class="btn-primary" onclick="navigateTo('analysis')"><i class="fa-solid fa-microscope"></i> Hemen Başla</button>
     </header>
 
     <!-- Hero Section -->
     <section id="hero" class="hero-section page-section active-section">
         <div class="hero-content">
-            <h1 class="animate-up">Toprağınızın İklim Direncini <br> <span class="highlight">Yapay Zeka</span> ile Keşfedin</h1>
+            <div class="hero-badge animate-up">
+                <i class="fa-solid fa-dna"></i>
+                <span>Yapay Zeka Destekli Mikrobiyom Platformu</span>
+            </div>
+            <h1 class="animate-up">Toprağınızın İklim Direncini <br><span class="highlight gradient-text">Yapay Zeka</span> ile Keşfedin</h1>
             <p class="animate-up delay-1">Kuraklık, tuzluluk ve iklim değişikliği etkilerine karşı mikrobiyom analiziyle toprağınızın ve bitkinizin sağlığını koruyun, geleceği güvenceye alın.</p>
             <div class="hero-buttons animate-up delay-2">
-                <a href="#" onclick="navigateTo('analysis')" class="btn-primary"><i class="fa-solid fa-microscope"></i> Analiz Başlat</a>
+                <a href="#" onclick="navigateTo('analysis')" class="btn-primary btn-glow"><i class="fa-solid fa-microscope"></i> Analiz Başlat</a>
                 <a href="#" onclick="navigateTo('how-it-works')" class="btn-secondary"><i class="fa-solid fa-circle-question"></i> Daha Fazla Bilgi</a>
             </div>
         </div>
         <div class="hero-visual animate-up delay-3">
+            <!-- Mikrobiyom Sağlık Skoru Kartı -->
             <div class="floating-card metric-card">
-                <i class="fa-solid fa-chart-line"></i>
+                <div class="metric-icon-wrap"><i class="fa-solid fa-seedling"></i></div>
                 <div class="info">
-                    <h4>İklim Skoru</h4>
-                    <span class="value">84/100</span>
+                    <h4>Mikrobiyom Sağlık Skoru</h4>
+                    <div class="score-bar-wrap"><div class="score-bar-fill" style="width:84%"></div></div>
+                    <div class="score-row">
+                        <span class="value">84/100</span>
+                        <span class="score-badge-opt">Optimal</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="globe-container">
-                <div class="globe"></div>
+            <!-- Toprak Mikrobiyomu Canvas -->
+            <div class="microbiome-container">
+                <canvas id="microbiomeCanvas" width="370" height="370"></canvas>
+                <div class="micro-ring r1"></div>
+                <div class="micro-ring r2"></div>
+                <div class="micro-ring r3"></div>
+            </div>
+
+            <!-- Canlı İzleme Kartı -->
+            <div class="floating-card alert-card">
+                <div class="pulse-dot"></div>
+                <div class="info">
+                    <h4>Canlı İzleme Aktif</h4>
+                    <span style="font-size:0.78rem;opacity:0.6;">Toprak sensörü bağlı</span>
+                </div>
             </div>
         </div>
     </section>
@@ -77,6 +104,7 @@
                 <p>Spesifik mikrobiyal inokülasyon ve biyoteknolojik müdahale önerileriyle, verim kaybını minimuma indirin.</p>
             </div>
         </div>
+
     </section>
 
     <!-- Map & Analysis Section -->
@@ -86,17 +114,11 @@
                 <h2>Bölgesel Analiz Paneli</h2>
                 <p>Aşağıdaki haritadan il/ilçe seçin. İster dosya yükleyerek ister soruları yanıtlayarak hızlı mikrobiyom analizi oluşturun.</p>
             </div>
-
             <div class="analysis-layout">
-                <!-- Sol Panel: Harita ve Seçim -->
                 <div class="map-panel">
                     <div class="selection-controls">
-                        <select id="provinceSelect" onchange="loadDistricts()">
-                            <option value="">İl Seçin...</option>
-                        </select>
-                        <select id="districtSelect" onchange="focusDistrict()" disabled>
-                            <option value="">Önce İl Seçin</option>
-                        </select>
+                        <select id="provinceSelect" onchange="loadDistricts()"><option value="">İl Seçin...</option></select>
+                        <select id="districtSelect" onchange="focusDistrict()" disabled><option value="">Önce İl Seçin</option></select>
                     </div>
                     <div id="map" class="map-view"></div>
                     <div class="coordinates-display">
@@ -104,22 +126,33 @@
                     </div>
                 </div>
 
-                <!-- Sağ Panel: Veri Girişi ve Sonuçlar -->
                 <div class="data-panel">
-                    <!-- Başlangıç Aşamasındaki Sekmeler (Input Steps) -->
                     <div id="inputSteps" class="step active">
                         <div class="analysis-tabs">
-                            <button class="tab-btn active" onclick="switchTab('survey')"><i class="fa-solid fa-list-check"></i> Anketle Hızlı Analiz</button>
-                            <button class="tab-btn" onclick="switchTab('upload')"><i class="fa-solid fa-file-csv"></i> Laboratuvar Verisi Yükle (CSV)</button>
+                            <button class="tab-btn active" id="tabSurveyBtn" onclick="switchTab('survey', this)"><i class="fa-solid fa-list-check"></i> Anketle Hızlı Analiz</button>
+                            <button class="tab-btn" id="tabUploadBtn" onclick="switchTab('upload', this)"><i class="fa-solid fa-file-csv"></i> Analiz Raporu Yükle</button>
                         </div>
 
-                        <!-- Anket Paneli -->
                         <div id="surveyTab" class="tab-content active">
                             <h3>Arazinize Dair Temel Bilgiler</h3>
                             <div class="survey-form">
                                 <div class="form-group">
                                     <label>Toprak Tipi:</label>
-                                    <select id="q-soil"><option>Kumlu (Geçirgen)</option><option>Killi (Su Tutan)</option><option>Tınlı (Dengeli)</option></select>
+                                     <select id="q-soil">
+                                         <option value="">Toprak Tipini Seçin...</option>
+                                         <option value="kumlu">Kumlu Toprak — Yüksek Geçirgenlik, Düşük Nem Tutma</option>
+                                         <option value="killi">Killi Toprak — Yüksek Su Tutma, Düşük Havalanma</option>
+                                         <option value="tinli">Tınlı Toprak — Dengeli Yapı (İdeal)</option>
+                                         <option value="killi-tinli">Killi-Tınlı Toprak — Orta Geçirgenlik, İyi Verimlilik</option>
+                                         <option value="kumlu-tinli">Kumlu-Tınlı Toprak — Hafif Yapı, Kolay İşlenebilir</option>
+                                         <option value="mil-tinli">Mil-Tınlı Toprak — Süpürüntülü, Yüksek Organik İçerik</option>
+                                         <option value="milli">Milli Toprak — İnce Tekstür, Erozyon Riski Yüksek</option>
+                                         <option value="organik">Organik / Bataklık Toprağı — Yüksek O.M., Asidik</option>
+                                         <option value="kireçli">Kireçtaşı Kökenli — Alkali, Yüksek pH, Demir Kilidi</option>
+                                         <option value="kizeltozlu">Lateritik / Kızıl Toprak — Fe-Al Oksit Baskın, Tropik</option>
+                                         <option value="tuzlu-alkali">Tuzlu-Alkali Toprak — Yüksek EC, Sodyum Baskınlığı</option>
+                                         <option value="tarım-dışı">Taşlı / Sığ Toprak — Düşük İşleme Potansiyeli</option>
+                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <label>Yetiştirilen Temel Mahsul:</label>
@@ -133,18 +166,22 @@
                                     <label>Kimyasal Gübre & İlaç Kullanımı:</label>
                                     <select id="q-fert"><option>Yüksek (Sürekli)</option><option>Orta Seviye</option><option>Düşük / Tamamen Organik</option></select>
                                 </div>
-                                <button class="btn-primary mt-20" style="width:100%; justify-content:center;" onclick="startAnalysis('survey')">Anket Verisiyle Analizi Başlat</button>
+                                <button class="btn-primary mt-20" style="width:100%;justify-content:center;" onclick="startAnalysis('survey')">Anket Verisiyle Analizi Başlat</button>
                             </div>
                         </div>
 
-                        <!-- Dosya Yükleme Paneli -->
-                        <div id="uploadTab" class="tab-content" style="display: none;">
+                        <div id="uploadTab" class="tab-content" style="display:none;">
                             <div class="upload-box" id="dropZone">
                                 <i class="fa-solid fa-cloud-arrow-up"></i>
-                                <h3>CSV Dosyası Yükleyin</h3>
-                                <p>Sürükle bırak ya da tıklayarak seç</p>
-                                <input type="file" id="fileInput" accept=".csv" hidden>
+                                <h3>Laboratuvar Analiz Raporunu Yükleyin</h3>
+                                <p>CSV veya PDF formatında — Sürükle bırak ya da tıklayarak seç</p>
+                                <input type="file" id="fileInput" accept=".csv,.pdf" hidden>
                                 <button class="btn-outline" onclick="document.getElementById('fileInput').click()">Dosya Seç</button>
+                            </div>
+                            <div class="upload-info-cards">
+                                <div class="upload-info-item"><i class="fa-solid fa-flask"></i><span>pH, EC, N-P-K</span></div>
+                                <div class="upload-info-item"><i class="fa-solid fa-bacterium"></i><span>Mikrobiyal Sayım</span></div>
+                                <div class="upload-info-item"><i class="fa-solid fa-chart-bar"></i><span>Enzim Aktivitesi</span></div>
                             </div>
                             <div class="simulation-alert">
                                 <i class="fa-solid fa-info-circle"></i> Demo modunda tüm dosyalar ve anket verileri yerel analiz edilir.
@@ -152,7 +189,6 @@
                         </div>
                     </div>
 
-                    <!-- Yükleniyor Ekranı -->
                     <div id="loadingStep" class="step">
                         <div class="loader-container">
                             <div class="ai-loader"></div>
@@ -162,20 +198,15 @@
                         <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
                     </div>
 
-                    <!-- Sonuç Ekranı -->
                     <div id="resultStep" class="step">
                         <div class="result-header">
                             <h3><span id="resultLocation">Bölge</span> Resmi Analiz Raporu</h3>
                             <button class="btn-sm btn-outline" onclick="downloadPDF()"><i class="fa-solid fa-download"></i> Raporu İndir (PDF)</button>
                         </div>
-
                         <div class="metrics-grid">
                             <div class="metric highlight-metric">
                                 <span class="metric-label">Bölgesel İklim Direnç Skoru</span>
-                                <div class="score-circle">
-                                    <h2 id="overallScore">--</h2>
-                                    <span>/100</span>
-                                </div>
+                                <div class="score-circle"><h2 id="overallScore">--</h2><span>/100</span></div>
                                 <span class="status warning" id="scoreStatus">Hesaplanıyor</span>
                             </div>
                             <div class="metric">
@@ -189,19 +220,12 @@
                                 <small>Mikrobiyal denge durumu</small>
                             </div>
                         </div>
-
-                        <!-- Resmi, Detaylı Rapor -->
                         <div class="formal-report">
-                            <div class="formal-report-content" id="reportText">
-                                <!-- JS ile Doldurulacak -->
-                            </div>
+                            <div class="formal-report-content" id="reportText"></div>
                         </div>
-
                         <div class="ai-recommendations">
                             <h4><i class="fa-solid fa-wand-magic-sparkles"></i> AI Çözüm Önerileri</h4>
-                            <ul class="recommendation-list" id="recommendationsList">
-                                <!-- JS İle Doldurulacak -->
-                            </ul>
+                            <ul class="recommendation-list" id="recommendationsList"></ul>
                         </div>
                         <button class="btn-secondary mt-20" onclick="resetAnalysis()">Yeni Analiz Yap</button>
                     </div>
@@ -210,26 +234,105 @@
         </div>
     </section>
 
+    <!-- AUTH MODAL KALDIRILDI -->
+    <div style="display:none" id="authOverlay">
+        <div class="auth-modal" id="authModal">
+            <button class="auth-close" onclick="closeAuthModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="auth-logo">
+                <i class="fa-solid fa-leaf"></i>
+                <span>MicroResilience <strong>AI</strong></span>
+            </div>
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="loginTabBtn" onclick="switchAuthTab('login')">Giriş Yap</button>
+                <button class="auth-tab" id="registerTabBtn" onclick="switchAuthTab('register')">Üye Ol</button>
+            </div>
+
+            <!-- Giriş Formu -->
+            <form class="auth-form" id="loginForm" onsubmit="handleLogin(event)">
+                <div class="auth-form-group">
+                    <label><i class="fa-solid fa-envelope"></i> E-posta</label>
+                    <input type="email" id="loginEmail" placeholder="ornek@email.com" required>
+                </div>
+                <div class="auth-form-group">
+                    <label><i class="fa-solid fa-lock"></i> Şifre</label>
+                    <div class="pw-wrap">
+                        <input type="password" id="loginPassword" placeholder="••••••••" required>
+                        <button type="button" class="toggle-pw" onclick="togglePassword('loginPassword')"><i class="fa-solid fa-eye"></i></button>
+                    </div>
+                </div>
+                <div class="auth-options">
+                    <label class="check-label"><input type="checkbox"> Beni Hatırla</label>
+                    <a href="#" class="link-accent">Şifremi Unuttum</a>
+                </div>
+                <button type="submit" class="btn-primary auth-submit"><i class="fa-solid fa-right-to-bracket"></i> Giriş Yap</button>
+                <div class="auth-divider"><span>veya</span></div>
+                <button type="button" class="btn-social" onclick="socialLogin()">
+                    <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/></svg>
+                    Google ile Giriş Yap
+                </button>
+                <p class="auth-switch">Hesabın yok mu? <a href="#" onclick="switchAuthTab('register')">Üye Ol</a></p>
+            </form>
+
+            <!-- Kayıt Formu -->
+            <form class="auth-form" id="registerForm" style="display:none;" onsubmit="handleRegister(event)">
+                <div class="auth-row">
+                    <div class="auth-form-group"><label><i class="fa-solid fa-user"></i> Ad</label><input type="text" id="regName" placeholder="Adınız" required></div>
+                    <div class="auth-form-group"><label><i class="fa-solid fa-user"></i> Soyad</label><input type="text" id="regSurname" placeholder="Soyadınız" required></div>
+                </div>
+                <div class="auth-form-group">
+                    <label><i class="fa-solid fa-envelope"></i> E-posta</label>
+                    <input type="email" id="regEmail" placeholder="ornek@email.com" required>
+                </div>
+                <div class="auth-form-group">
+                    <label><i class="fa-solid fa-phone"></i> Telefon <small style="opacity:0.5">(İsteğe Bağlı)</small></label>
+                    <input type="tel" id="regPhone" placeholder="+90 5XX XXX XX XX">
+                </div>
+                <div class="auth-form-group">
+                    <label><i class="fa-solid fa-lock"></i> Şifre</label>
+                    <div class="pw-wrap">
+                        <input type="password" id="regPassword" placeholder="En az 8 karakter" required oninput="checkPwStrength(this.value)">
+                        <button type="button" class="toggle-pw" onclick="togglePassword('regPassword')"><i class="fa-solid fa-eye"></i></button>
+                    </div>
+                    <div class="pw-strength"><div class="pw-bar" id="pwBar"></div></div>
+                    <small class="pw-hint" id="pwHint"></small>
+                </div>
+                <div class="auth-form-group">
+                    <label><i class="fa-solid fa-lock"></i> Şifre Tekrar</label>
+                    <div class="pw-wrap">
+                        <input type="password" id="regPasswordConfirm" placeholder="Şifrenizi tekrar girin" required>
+                        <button type="button" class="toggle-pw" onclick="togglePassword('regPasswordConfirm')"><i class="fa-solid fa-eye"></i></button>
+                    </div>
+                </div>
+                <label class="check-label terms-check"><input type="checkbox" id="termsCheck" required> <a href="#" class="link-accent">Gizlilik Politikası ve Kullanım Koşulları</a>'nı kabul ediyorum</label>
+                <button type="submit" class="btn-primary auth-submit"><i class="fa-solid fa-user-plus"></i> Ücretsiz Hesap Oluştur</button>
+                <div class="auth-divider"><span>veya</span></div>
+                <button type="button" class="btn-social" onclick="socialLogin()">
+                    <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/></svg>
+                    Google ile Kayıt Ol
+                </button>
+                <p class="auth-switch">Zaten hesabın var mı? <a href="#" onclick="switchAuthTab('login')">Giriş Yap</a></p>
+            </form>
+        </div>
+    </div>
+
     <!-- Chatbot Widget -->
     <div class="chatbot-widget" id="chatbotWidget">
         <button class="chat-toggle" onclick="toggleChat()" id="chatBtn">
-            <i class="fa-solid fa-robot"></i><span class="chat-badge text-focus-in">!</span>
+            <i class="fa-solid fa-leaf"></i><span class="chat-badge text-focus-in">!</span>
         </button>
-        <div class="chat-window" id="chatWindow" style="display: none;">
+        <div class="chat-window" id="chatWindow" style="display:none;">
             <div class="chat-header">
-                <div style="display: flex; align-items:center; gap:10px;">
-                    <div class="bot-avatar"><i class="fa-solid fa-robot"></i></div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div class="bot-avatar"><i class="fa-solid fa-seedling"></i></div>
                     <div>
-                        <h4 style="margin:0; font-size:1rem;">Mico</h4>
-                        <small style="color:var(--primary); font-size:0.7rem;">Çevrimiçi</small>
+                        <h4 style="margin:0;font-size:1rem;">Mico</h4>
+                        <small style="color:var(--primary);font-size:0.7rem;">Çevrimiçi</small>
                     </div>
                 </div>
                 <button class="close-chat" onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="chat-body" id="chatBody">
-                <div class="message ai-message">
-                    Merhaba! Ben Mico. 🌿 Toprak sağlığı, rapor sonuçlarınız veya kullanmanız gereken gübrelerle ilgili bana sorular sorabilirsiniz. Size nasıl yardımcı olabilirim?
-                </div>
+                <div class="message ai-message">Merhaba! Ben Mico. 🌿 Toprak sağlığı, rapor sonuçlarınız veya kullanmanız gereken gübrelerle ilgili bana sorular sorabilirsiniz. Size nasıl yardımcı olabilirim?</div>
             </div>
             <div class="chat-input-area">
                 <input type="text" id="chatInput" placeholder="Soru sorun... (Örn: Raporumu açıkla)" onkeypress="handleChatPress(event)">
@@ -238,61 +341,41 @@
         </div>
     </div>
 
-    <!-- Gizli PDF Rapor Şablonu (Resmi Format) -->
-    <div id="pdf-container" style="position: absolute; left: -9999px; top: -9999px; z-index:-10;">
-        <div id="printable-report" style="width: 800px; padding: 50px; background: white; color: #111; font-family: 'Times New Roman', Times, serif; box-sizing: border-box;">
-            <div style="border-bottom: 3px solid #0f766e; padding-bottom: 15px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
+    <!-- Gizli PDF Rapor Şablonu -->
+    <div id="pdf-container" style="position:absolute;left:-9999px;top:-9999px;z-index:-10;">
+        <div id="printable-report" style="width:800px;padding:50px;background:white;color:#111;font-family:'Times New Roman',Times,serif;box-sizing:border-box;">
+            <div style="border-bottom:3px solid #0f766e;padding-bottom:15px;margin-bottom:30px;display:flex;justify-content:space-between;align-items:flex-end;">
                 <div>
-                    <h1 style="color: #0f766e; margin: 0; font-size: 26px; text-transform: uppercase;">MicroResilience AI</h1>
-                    <p style="margin: 5px 0 0; color: #444; font-size: 14px; font-weight: bold;">AKILLI LABORATUVAR & ZİRAİ ANALİZ SONUÇ RAPORU</p>
+                    <h1 style="color:#0f766e;margin:0;font-size:26px;text-transform:uppercase;">MicroResilience AI</h1>
+                    <p style="margin:5px 0 0;color:#444;font-size:14px;font-weight:bold;">AKILLI LABORATUVAR & ZİRAİ ANALİZ SONUÇ RAPORU</p>
                 </div>
-                <div style="text-align: right; font-size: 13px; color: #333;">
-                    <p style="margin: 0;"><strong>Tarih:</strong> <span id="pdf-date"></span></p>
-                    <p style="margin: 5px 0 0;"><strong>Rapor Belge No:</strong> <span id="pdf-id"></span></p>
+                <div style="text-align:right;font-size:13px;color:#333;">
+                    <p style="margin:0;"><strong>Tarih:</strong> <span id="pdf-date"></span></p>
+                    <p style="margin:5px 0 0;"><strong>Rapor Belge No:</strong> <span id="pdf-id"></span></p>
                 </div>
             </div>
-
-            <h2 style="font-size: 18px; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 15px; color:#222;">1. BÖLGE VE ÖN TESPİT BULGULARI</h2>
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 14px;">
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ccc; background: #f4f4f4; width: 35%;"><strong>Analiz Edilen Koordinat / Bölge:</strong></td>
-                    <td style="padding: 10px; border: 1px solid #ccc;" id="pdf-location"></td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ccc; background: #f4f4f4;"><strong>Veri Kaynağı (Analiz Türü):</strong></td>
-                    <td style="padding: 10px; border: 1px solid #ccc;" id="pdf-type"></td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ccc; background: #f4f4f4;"><strong>Genel İklim Direnç Skoru:</strong></td>
-                    <td style="padding: 10px; border: 1px solid #ccc;"><strong style="font-size:20px; color:#ef4444;" id="pdf-score"></strong> / 100</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ccc; background: #f4f4f4;"><strong>Tespit Edilen Baskın Stres:</strong></td>
-                    <td style="padding: 10px; border: 1px solid #ccc; font-weight:bold; color:#b91c1c;" id="pdf-stress"></td>
-                </tr>
+            <h2 style="font-size:18px;border-bottom:1px solid #ccc;padding-bottom:5px;margin-bottom:15px;color:#222;">1. BÖLGE VE ÖN TESPİT BULGULARI</h2>
+            <table style="width:100%;border-collapse:collapse;margin-bottom:30px;font-size:14px;">
+                <tr><td style="padding:10px;border:1px solid #ccc;background:#f4f4f4;width:35%;"><strong>Analiz Edilen Koordinat / Bölge:</strong></td><td style="padding:10px;border:1px solid #ccc;" id="pdf-location"></td></tr>
+                <tr><td style="padding:10px;border:1px solid #ccc;background:#f4f4f4;"><strong>Veri Kaynağı (Analiz Türü):</strong></td><td style="padding:10px;border:1px solid #ccc;" id="pdf-type"></td></tr>
+                <tr><td style="padding:10px;border:1px solid #ccc;background:#f4f4f4;"><strong>Genel İklim Direnç Skoru:</strong></td><td style="padding:10px;border:1px solid #ccc;"><strong style="font-size:20px;color:#ef4444;" id="pdf-score"></strong> / 100</td></tr>
+                <tr><td style="padding:10px;border:1px solid #ccc;background:#f4f4f4;"><strong>Tespit Edilen Baskın Stres:</strong></td><td style="padding:10px;border:1px solid #ccc;font-weight:bold;color:#b91c1c;" id="pdf-stress"></td></tr>
             </table>
-
-            <h2 style="font-size: 18px; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 15px; color:#222;">2. YAPAY ZEKA DEĞERLENDİRME ÖZETİ</h2>
-            <div style="background: #f1f8f6; padding: 20px; border-left: 4px solid #22c55e; margin-bottom: 30px; line-height: 1.6; font-size: 14px;" id="pdf-ai-summary">
-            </div>
-
-            <h2 style="font-size: 18px; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 15px; color:#222;">3. BİYOTEKNOLOJİK & TARIMSAL EYLEM PLANI (ÖNERİLER)</h2>
-            <ul style="line-height: 1.8; margin-bottom: 50px; font-size: 14px;" id="pdf-recs">
-            </ul>
-
-            <div style="text-align: center; border-top: 1px solid #ccc; padding-top: 15px; font-size: 11px; color: #666; font-style: italic;">
+            <h2 style="font-size:18px;border-bottom:1px solid #ccc;padding-bottom:5px;margin-bottom:15px;color:#222;">2. YAPAY ZEKA DEĞERLENDİRME ÖZETİ</h2>
+            <div style="background:#f1f8f6;padding:20px;border-left:4px solid #22c55e;margin-bottom:30px;line-height:1.6;font-size:14px;" id="pdf-ai-summary"></div>
+            <h2 style="font-size:18px;border-bottom:1px solid #ccc;padding-bottom:5px;margin-bottom:15px;color:#222;">3. BİYOTEKNOLOJİK & TARIMSAL EYLEM PLANI (ÖNERİLER)</h2>
+            <ul style="line-height:1.8;margin-bottom:50px;font-size:14px;" id="pdf-recs"></ul>
+            <div style="text-align:center;border-top:1px solid #ccc;padding-top:15px;font-size:11px;color:#666;font-style:italic;">
                 Bu evrak, sahadan girilen veriler ışığında teşhis algoritması ve Makine Öğrenmesi (AI) algoritmaları tarafından bilgi amaçlı üretilmiştir.<br>
                 Zirai ilaç veya tıbbi gübre reçetesi yerine geçmez. Doğrulamak için yerel ziraat kuruluşunuza başvurunuz. &copy; 2026 MicroResilience AI Raporlama Sistemi
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
     <footer>
         <p>&copy; 2026 MicroResilience AI | İklim Krizine Karşı Sürdürülebilir Tarım</p>
     </footer>
 
-    <!-- Kütüphaneler -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="provinces.js"></script>
