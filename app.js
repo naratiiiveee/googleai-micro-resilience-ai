@@ -1,4 +1,4 @@
-// ====== Hareketli Arka Plan — Aurora + Particle Network ======
+// ====== Organik Mikrobiyom Arka Plan — Hyphae, Nematodes & Bacteria ======
 const bgCanvas = document.getElementById('bgCanvas');
 const bgCtx = bgCanvas.getContext('2d');
 
@@ -6,276 +6,263 @@ function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = wind
 resizeBg();
 window.addEventListener('resize', resizeBg);
 
-// Floating aurora blobs
-const blobs = [
-    { x: 0.15, y: 0.25, r: 0.38, color: '34,197,94',  speed: 0.0009, phase: 0 },
-    { x: 0.80, y: 0.70, r: 0.35, color: '15,118,110', speed: 0.0007, phase: 1.5 },
-    { x: 0.50, y: 0.10, r: 0.28, color: '6,182,212',  speed: 0.0011, phase: 3.0 },
-    { x: 0.90, y: 0.15, r: 0.22, color: '34,197,94',  speed: 0.0008, phase: 4.5 },
-    { x: 0.10, y: 0.85, r: 0.25, color: '16,185,129', speed: 0.0010, phase: 2.0 },
-];
-
-let blobTime = 0;
-
-// Small particles
-const bgParts = Array.from({ length: 110 }, () => ({
-    x: Math.random() * window.innerWidth,
-    y: Math.random() * window.innerHeight,
-    r: Math.random() * 2 + 0.5,
-    vx: (Math.random() - 0.5) * 0.22,
-    vy: (Math.random() - 0.5) * 0.22,
-    op: Math.random() * 0.6 + 0.15,
-    phase: Math.random() * Math.PI * 2,
-    type: Math.floor(Math.random() * 3), // 0=green, 1=teal, 2=cyan
-}));
-
-// DNA helix nodes along two sine waves
-const helixNodes = Array.from({ length: 18 }, (_, i) => ({ t: i / 17 }));
-let helixTime = 0;
-
-function drawHelix(W, H) {
-    const cx = W * 0.92, cy = H * 0.5, amp = H * 0.28, len = H * 0.55;
-    for (let i = 0; i < helixNodes.length - 1; i++) {
-        const t1 = helixNodes[i].t, t2 = helixNodes[i + 1].t;
-        const y1 = cy - len / 2 + t1 * len, y2 = cy - len / 2 + t2 * len;
-        const x1a = cx + Math.sin(t1 * Math.PI * 4 + helixTime) * amp * 0.18;
-        const x1b = cx + Math.sin(t1 * Math.PI * 4 + helixTime + Math.PI) * amp * 0.18;
-        const x2a = cx + Math.sin(t2 * Math.PI * 4 + helixTime) * amp * 0.18;
-        const x2b = cx + Math.sin(t2 * Math.PI * 4 + helixTime + Math.PI) * amp * 0.18;
-        // Strand A
-        bgCtx.beginPath();
-        bgCtx.strokeStyle = `rgba(34,197,94,0.12)`;
-        bgCtx.lineWidth = 1;
-        bgCtx.moveTo(x1a, y1); bgCtx.lineTo(x2a, y2); bgCtx.stroke();
-        // Strand B
-        bgCtx.beginPath();
-        bgCtx.strokeStyle = `rgba(6,182,212,0.10)`;
-        bgCtx.moveTo(x1b, y1); bgCtx.lineTo(x2b, y2); bgCtx.stroke();
-        // Crossbars
-        if (i % 2 === 0) {
-            bgCtx.beginPath();
-            bgCtx.strokeStyle = `rgba(34,197,94,0.07)`;
-            bgCtx.moveTo(x1a, y1); bgCtx.lineTo(x1b, y1); bgCtx.stroke();
+// 1. Hyphae (Mantar Hifleri) - Yavaşça dallanan yapılar
+class Hypha {
+    constructor(W, H) {
+        this.reset(W, H);
+    }
+    reset(W, H) {
+        this.x = Math.random() * W;
+        this.y = Math.random() * H;
+        this.angle = Math.random() * Math.PI * 2;
+        this.points = [{ x: this.x, y: this.y }];
+        this.maxLength = Math.random() * 150 + 50;
+        this.life = 0;
+        this.maxLife = Math.random() * 300 + 200;
+        this.opacity = Math.random() * 0.3 + 0.1;
+        this.width = Math.random() * 1.5 + 0.5;
+    }
+    update(W, H) {
+        if (this.points.length < this.maxLength && this.life < this.maxLife * 0.7) {
+            const last = this.points[this.points.length - 1];
+            this.angle += (Math.random() - 0.5) * 0.3;
+            const nextX = last.x + Math.cos(this.angle) * 1.5;
+            const nextY = last.y + Math.sin(this.angle) * 1.5;
+            this.points.push({ x: nextX, y: nextY });
         }
-        // Nodes
-        [[x1a, y1, '34,197,94'], [x1b, y1, '6,182,212']].forEach(([nx, ny, c]) => {
-            bgCtx.beginPath();
-            bgCtx.arc(nx, ny, 2.5, 0, Math.PI * 2);
-            bgCtx.fillStyle = `rgba(${c},0.35)`;
-            bgCtx.fill();
-        });
+        this.life++;
+        if (this.life > this.maxLife) this.reset(W, H);
+    }
+    draw() {
+        if (this.points.length < 2) return;
+        bgCtx.beginPath();
+        bgCtx.lineWidth = this.width;
+        let alpha = this.opacity;
+        if (this.life > this.maxLife * 0.8) alpha *= (1 - (this.life - this.maxLife * 0.8) / (this.maxLife * 0.2));
+        bgCtx.strokeStyle = `rgba(210, 180, 140, ${alpha})`; // Tan / Kahvemsi hif
+        bgCtx.moveTo(this.points[0].x, this.points[0].y);
+        for (let i = 1; i < this.points.length; i++) {
+            bgCtx.lineTo(this.points[i].x, this.points[i].y);
+        }
+        bgCtx.stroke();
     }
 }
+
+// 2. Nematodes (Toprak Solucanları/Nematodlar) - Akışkan hareket
+class Nematode {
+    constructor(W, H) {
+        this.reset(W, H);
+    }
+    reset(W, H) {
+        this.x = Math.random() * W;
+        this.y = Math.random() * H;
+        this.vx = (Math.random() - 0.5) * 0.5;
+        this.vy = (Math.random() - 0.5) * 0.5;
+        this.length = Math.random() * 20 + 20;
+        this.history = [];
+        this.amplitude = Math.random() * 5 + 2;
+        this.frequency = Math.random() * 0.1 + 0.05;
+        this.time = Math.random() * 100;
+        this.opacity = Math.random() * 0.2 + 0.05;
+    }
+    update(W, H) {
+        this.time += 0.05;
+        const swerve = Math.sin(this.time) * this.amplitude;
+        this.x += this.vx + Math.cos(this.time * this.frequency) * 0.2;
+        this.y += this.vy + Math.sin(this.time * this.frequency) * 0.2;
+
+        this.history.push({ x: this.x, y: this.y });
+        if (this.history.length > 15) this.history.shift();
+
+        if (this.x < -50) this.x = W + 50; if (this.x > W + 50) this.x = -50;
+        if (this.y < -50) this.y = H + 50; if (this.y > H + 50) this.y = -50;
+    }
+    draw() {
+        if (this.history.length < 2) return;
+        bgCtx.beginPath();
+        bgCtx.lineWidth = 2;
+        bgCtx.lineCap = 'round';
+        bgCtx.strokeStyle = `rgba(188, 143, 143, ${this.opacity})`; // Rosy Brown
+        bgCtx.moveTo(this.history[0].x, this.history[0].y);
+        for (let i = 1; i < this.history.length; i++) {
+            bgCtx.lineTo(this.history[i].x, this.history[i].y);
+        }
+        bgCtx.stroke();
+    }
+}
+
+// 3. Bacteria (Bakteri Kolonileri) - Parlayan partiküller
+class Bacterium {
+    constructor(W, H) {
+        this.reset(W, H);
+    }
+    reset(W, H) {
+        this.x = Math.random() * W;
+        this.y = Math.random() * H;
+        this.r = Math.random() * 2 + 1;
+        this.pulse = Math.random() * Math.PI * 2;
+        this.speed = Math.random() * 0.02 + 0.01;
+        this.color = Math.random() > 0.5 ? '46, 139, 87' : '139, 69, 19'; // Green or Brown
+        this.opacity = Math.random() * 0.4 + 0.1;
+    }
+    update() {
+        this.pulse += this.speed;
+        this.x += Math.sin(this.pulse) * 0.1;
+        this.y += Math.cos(this.pulse * 0.5) * 0.1;
+    }
+    draw() {
+        const glow = 0.5 + Math.sin(this.pulse) * 0.3;
+        const radGrd = bgCtx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r * 6);
+        radGrd.addColorStop(0, `rgba(${this.color}, ${this.opacity * glow})`);
+        radGrd.addColorStop(1, `rgba(${this.color}, 0)`);
+        bgCtx.fillStyle = radGrd;
+        bgCtx.beginPath();
+        bgCtx.arc(this.x, this.y, this.r * 6, 0, Math.PI * 2);
+        bgCtx.fill();
+        
+        bgCtx.fillStyle = `rgba(${this.color}, ${this.opacity})`;
+        bgCtx.beginPath();
+        bgCtx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        bgCtx.fill();
+    }
+}
+
+const hyphae = Array.from({ length: 45 }, () => new Hypha(bgCanvas.width, bgCanvas.height));
+const nematodes = Array.from({ length: 25 }, () => new Nematode(bgCanvas.width, bgCanvas.height));
+const bacteria = Array.from({ length: 120 }, () => new Bacterium(bgCanvas.width, bgCanvas.height));
 
 function animateBg() {
     const W = bgCanvas.width, H = bgCanvas.height;
     bgCtx.clearRect(0, 0, W, H);
-    blobTime += 0.012;
-    helixTime += 0.018;
-
-    // Aurora blobs
-    blobs.forEach((b, i) => {
-        b.phase += b.speed * 60;
-        const bx = (b.x + Math.sin(b.phase) * 0.12) * W;
-        const by = (b.y + Math.cos(b.phase * 0.7) * 0.10) * H;
-        const br = b.r * Math.min(W, H);
-        const grd = bgCtx.createRadialGradient(bx, by, 0, bx, by, br);
-        const pulse = 0.04 + 0.015 * Math.sin(blobTime * 1.3 + i);
-        grd.addColorStop(0, `rgba(${b.color},${pulse})`);
-        grd.addColorStop(0.5, `rgba(${b.color},${pulse * 0.4})`);
-        grd.addColorStop(1, `rgba(${b.color},0)`);
-        bgCtx.fillStyle = grd;
-        bgCtx.fillRect(0, 0, W, H);
-    });
-
-    // DNA helix (right side)
-    drawHelix(W, H);
-
-    // Particle connections
-    for (let i = 0; i < bgParts.length; i++) {
-        for (let j = i + 1; j < bgParts.length; j++) {
-            const dx = bgParts[i].x - bgParts[j].x, dy = bgParts[i].y - bgParts[j].y;
-            const d = Math.sqrt(dx * dx + dy * dy);
-            if (d < 130) {
-                bgCtx.beginPath();
-                bgCtx.strokeStyle = `rgba(34,197,94,${0.07 * (1 - d / 130)})`;
-                bgCtx.lineWidth = 0.5;
-                bgCtx.moveTo(bgParts[i].x, bgParts[i].y);
-                bgCtx.lineTo(bgParts[j].x, bgParts[j].y);
-                bgCtx.stroke();
-            }
-        }
-    }
-
-    // Particles
-    const colors = ['34,197,94', '15,118,110', '6,182,212'];
-    bgParts.forEach(p => {
-        p.phase += 0.02;
-        const op = p.op + Math.sin(p.phase) * 0.15;
-        // Subtle glow
-        const grd = bgCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
-        grd.addColorStop(0, `rgba(${colors[p.type]},${op * 0.7})`);
-        grd.addColorStop(1, `rgba(${colors[p.type]},0)`);
-        bgCtx.fillStyle = grd;
-        bgCtx.beginPath();
-        bgCtx.arc(p.x, p.y, p.r * 4, 0, Math.PI * 2);
-        bgCtx.fill();
-        // Core dot
-        bgCtx.beginPath();
-        bgCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        bgCtx.fillStyle = `rgba(${colors[p.type]},${op})`;
-        bgCtx.fill();
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < 0) p.x = bgCanvas.width;
-        if (p.x > bgCanvas.width) p.x = 0;
-        if (p.y < 0) p.y = bgCanvas.height;
-        if (p.y > bgCanvas.height) p.y = 0;
-    });
+    
+    // Yavaş ve akışkan hareket
+    hyphae.forEach(h => { h.update(W, H); h.draw(); });
+    nematodes.forEach(n => { n.update(W, H); n.draw(); });
+    bacteria.forEach(b => { b.update(); b.draw(); });
 
     requestAnimationFrame(animateBg);
 }
 animateBg();
 
-// ====== Toprak Mikrobiyomu Canvas Animasyonu ======
+// ====== Toprak Mikrobiyomu (Lens) Canvas Animasyonu ======
 const mCanvas = document.getElementById('microbiomeCanvas');
 const mCtx = mCanvas.getContext('2d');
 const MX = mCanvas.width / 2, MY = mCanvas.height / 2, MR = 175;
 
-// Soil layers
-const layers = [
-    { y: MY - 40, color: 'rgba(139,90,43,0.35)', w: 340 },
-    { y: MY + 10, color: 'rgba(101,67,33,0.4)', w: 340 },
-    { y: MY + 60, color: 'rgba(74,48,22,0.45)', w: 340 },
-];
-
-// Microorganism particles inside the sphere
-const microPs = Array.from({ length: 70 }, () => {
+// Microorganism types for the high-detail lens
+const biologicalSamples = Array.from({ length: 85 }, () => {
     const angle = Math.random() * Math.PI * 2;
-    const rr = Math.random() * MR * 0.82;
+    const rr = Math.random() * MR * 0.88;
     return {
-        x: MX + Math.cos(angle) * rr, y: MY + Math.sin(angle) * rr,
-        r: Math.random() * 4 + 1.5,
-        color: ['#22c55e', '#16a34a', '#0f766e', '#06b6d4', '#10b981'][Math.floor(Math.random() * 5)],
-        vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
-        phase: Math.random() * Math.PI * 2, op: Math.random() * 0.6 + 0.3, isSpore: Math.random() > 0.75,
+        x: MX + Math.cos(angle) * rr, 
+        y: MY + Math.sin(angle) * rr,
+        r: Math.random() * 4 + 1.2,
+        color: ['#2E8B57', '#228B22', '#8B4513', '#D2B48C', '#6B8E23'][Math.floor(Math.random() * 5)],
+        vx: (Math.random() - 0.5) * 0.25, 
+        vy: (Math.random() - 0.5) * 0.25,
+        type: Math.floor(Math.random() * 3), // 0: Cocci, 1: Bacilli, 2: Amoeboid
+        phase: Math.random() * Math.PI * 2,
+        op: Math.random() * 0.5 + 0.3
     };
 });
 
-// Mycelium network nodes
-const mycelNodes = Array.from({ length: 12 }, () => {
-    const angle = Math.random() * Math.PI * 2, rr = Math.random() * MR * 0.7 + 20;
-    return { x: MX + Math.cos(angle) * rr, y: MY + Math.sin(angle) * rr };
+// Fine Mycelium network inside the lens
+const lensMycelium = Array.from({ length: 15 }, () => {
+    const angle = Math.random() * Math.PI * 2, rr = Math.random() * MR * 0.75;
+    return { x: MX + Math.cos(angle) * rr, y: MY + Math.sin(angle) * rr, nodes: [] };
 });
 
 let mTime = 0;
 
 function animateMicro() {
     mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
-    mTime += 0.012;
+    mTime += 0.01;
 
-    // Clipping to circle
     mCtx.save();
     mCtx.beginPath();
     mCtx.arc(MX, MY, MR, 0, Math.PI * 2);
     mCtx.clip();
 
-    // Deep earth gradient background
-    const earthGrad = mCtx.createRadialGradient(MX - 30, MY - 50, 10, MX, MY, MR);
-    earthGrad.addColorStop(0, '#1a2e1a');
-    earthGrad.addColorStop(0.4, '#0f1f12');
-    earthGrad.addColorStop(0.7, '#0a1a10');
-    earthGrad.addColorStop(1, '#060d08');
-    mCtx.fillStyle = earthGrad;
+    // Subtle dark gradient for depth
+    const dGrad = mCtx.createRadialGradient(MX, MY, MR * 0.5, MX, MY, MR);
+    dGrad.addColorStop(0, 'rgba(42, 27, 14, 0.1)');
+    dGrad.addColorStop(1, 'rgba(10, 18, 14, 0.6)');
+    mCtx.fillStyle = dGrad;
     mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
 
-    // Soil horizon layers
-    layers.forEach(l => {
-        mCtx.fillStyle = l.color;
-        mCtx.fillRect(MX - l.w / 2, l.y, l.w, 28);
-    });
-
-    // Mycelium network (glowing lines)
-    for (let i = 0; i < mycelNodes.length; i++) {
-        for (let j = i + 1; j < mycelNodes.length; j++) {
-            const dx = mycelNodes[i].x - mycelNodes[j].x, dy = mycelNodes[i].y - mycelNodes[j].y;
+    // Drawing Mycelium Network
+    for (let i = 0; i < lensMycelium.length; i++) {
+        for (let j = i + 1; j < lensMycelium.length; j++) {
+            const dx = lensMycelium[i].x - lensMycelium[j].x, dy = lensMycelium[i].y - lensMycelium[j].y;
             const d = Math.sqrt(dx * dx + dy * dy);
-            if (d < 120) {
+            if (d < 100) {
                 mCtx.beginPath();
-                mCtx.strokeStyle = `rgba(34,197,94,${0.25 * (1 - d / 120) * (0.7 + 0.3 * Math.sin(mTime + i))})`;
-                mCtx.lineWidth = 0.8;
-                mCtx.moveTo(mycelNodes[i].x, mycelNodes[i].y);
-                mCtx.lineTo(mycelNodes[j].x, mycelNodes[j].y);
+                const p = (0.7 + 0.3 * Math.sin(mTime + i));
+                mCtx.strokeStyle = `rgba(210, 180, 140, ${0.15 * (1 - d / 100) * p})`;
+                mCtx.lineWidth = 0.6;
+                mCtx.moveTo(lensMycelium[i].x, lensMycelium[i].y);
+                mCtx.lineTo(lensMycelium[j].x, lensMycelium[j].y);
                 mCtx.stroke();
             }
         }
     }
 
-    // Slowly drift mycelium nodes
-    mycelNodes.forEach((n, i) => {
-        n.x += Math.sin(mTime * 0.5 + i) * 0.15;
-        n.y += Math.cos(mTime * 0.4 + i) * 0.15;
-        const dx = n.x - MX, dy = n.y - MY;
-        if (Math.sqrt(dx * dx + dy * dy) > MR * 0.8) { n.x = MX + dx * 0.5; n.y = MY + dy * 0.5; }
-    });
-
-    // Microorganism particles
-    microPs.forEach((p, i) => {
-        p.phase += 0.02;
-        const glow = mCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 3);
+    // Drawing biological samples
+    biologicalSamples.forEach((p, i) => {
+        p.phase += 0.015;
         const op = p.op * (0.8 + 0.2 * Math.sin(p.phase));
-        glow.addColorStop(0, p.color + 'cc');
-        glow.addColorStop(0.4, p.color + '55');
+        mCtx.globalAlpha = op;
+        mCtx.fillStyle = p.color;
+        mCtx.beginPath();
+
+        if (p.type === 0) { // Cocci (Circular)
+            mCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        } else if (p.type === 1) { // Bacilli (Rod-shaped)
+            const rodAngle = Math.atan2(p.vy, p.vx);
+            mCtx.ellipse(p.x, p.y, p.r * 2.2, p.r * 1, rodAngle, 0, Math.PI * 2);
+        } else { // Amoeboid (Wobbly)
+            for(let j=0; j<6; j++){
+                const ang = (j/6) * Math.PI * 2;
+                const off = Math.sin(mTime * 3 + i + j) * (p.r * 0.4);
+                const rx = p.x + Math.cos(ang) * (p.r + off);
+                const ry = p.y + Math.sin(ang) * (p.r + off);
+                j === 0 ? mCtx.moveTo(rx, ry) : mCtx.lineTo(rx, ry);
+            }
+        }
+        mCtx.fill();
+        
+        // Glow effect for bacteria
+        const glow = mCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
+        glow.addColorStop(0, p.color + '44');
         glow.addColorStop(1, 'transparent');
         mCtx.fillStyle = glow;
-        mCtx.beginPath();
-        mCtx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
         mCtx.fill();
 
-        mCtx.beginPath();
-        if (p.isSpore) {
-            mCtx.ellipse(p.x, p.y, p.r * 1.5, p.r * 0.8, Math.sin(mTime + i) * 0.5, 0, Math.PI * 2);
-        } else {
-            mCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        }
-        mCtx.fillStyle = p.color;
-        mCtx.globalAlpha = op;
-        mCtx.fill();
-        mCtx.globalAlpha = 1;
-
-        p.x += p.vx + Math.sin(mTime + i * 0.7) * 0.1;
-        p.y += p.vy + Math.cos(mTime + i * 0.5) * 0.1;
+        p.x += p.vx; p.y += p.vy;
         const dx = p.x - MX, dy = p.y - MY;
-        if (Math.sqrt(dx * dx + dy * dy) > MR * 0.9) { p.vx *= -1; p.vy *= -1; p.x += p.vx * 2; p.y += p.vy * 2; }
+        if (Math.sqrt(dx * dx + dy * dy) > MR * 0.95) { p.vx *= -1.1; p.vy *= -1.1; }
+        p.vx *= 0.99; p.vy *= 0.99; // Damping
+        if (Math.abs(p.vx) < 0.05) p.vx = (Math.random() - 0.5) * 0.5;
+        if (Math.abs(p.vy) < 0.05) p.vy = (Math.random() - 0.5) * 0.5;
     });
 
-    // Outer glow ring
-    const outerGlow = mCtx.createRadialGradient(MX, MY, MR * 0.75, MX, MY, MR);
-    outerGlow.addColorStop(0, 'transparent');
-    outerGlow.addColorStop(1, `rgba(34,197,94,${0.15 + 0.08 * Math.sin(mTime)})`);
-    mCtx.fillStyle = outerGlow;
+    mCtx.restore();
+
+    // Lens Refraction/Glass effect
+    const gGrad = mCtx.createRadialGradient(MX - 50, MY - 50, 0, MX, MY, MR);
+    gGrad.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
+    gGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0)');
+    gGrad.addColorStop(1, 'rgba(46, 139, 87, 0.05)');
+    mCtx.fillStyle = gGrad;
     mCtx.beginPath();
     mCtx.arc(MX, MY, MR, 0, Math.PI * 2);
     mCtx.fill();
 
-    // Scanning line
-    const scanY = MY - MR + ((mTime * 40) % (MR * 2));
-    if (scanY < MY + MR) {
-        mCtx.beginPath();
-        mCtx.strokeStyle = `rgba(34,197,94,0.15)`;
-        mCtx.lineWidth = 1;
-        const half = Math.sqrt(Math.max(0, MR * MR - (scanY - MY) ** 2));
-        mCtx.moveTo(MX - half, scanY);
-        mCtx.lineTo(MX + half, scanY);
-        mCtx.stroke();
-    }
-
-    mCtx.restore();
-
-    // Circle border glow
+    // Outer border ring
     mCtx.beginPath();
     mCtx.arc(MX, MY, MR, 0, Math.PI * 2);
-    mCtx.strokeStyle = `rgba(34,197,94,${0.5 + 0.2 * Math.sin(mTime)})`;
-    mCtx.lineWidth = 2;
+    mCtx.strokeStyle = 'rgba(46, 139, 87, 0.3)';
+    mCtx.lineWidth = 4;
     mCtx.stroke();
 
     requestAnimationFrame(animateMicro);
@@ -294,7 +281,7 @@ let currentDistricts = [];
 
 const customIcon = L.divIcon({
     className: 'custom-div-icon',
-    html: "<div style='background-color:#22c55e;width:15px;height:15px;border-radius:50%;box-shadow:0 0 15px #22c55e;border:2px solid #fff'></div>",
+    html: "<div style='background-color:#2E8B57;width:15px;height:15px;border-radius:50%;box-shadow:0 0 15px #2E8B57;border:2px solid #fff'></div>",
     iconSize: [15, 15], iconAnchor: [7.5, 7.5]
 });
 
@@ -389,26 +376,89 @@ function startAnalysis(method) {
     }, 300);
 }
 
+// ====== Dinamik Uzman Analiz Motoru (Expert Engine) ======
+const EXPERT_DATA = {
+    soil: {
+        'kumlu': { score: 45, stress: 'Düşük Nem Tutma & Sızıntı', enzyme: 'Düşük Oksidaz', effect: 'gecirgen yapı nedeniyle su ve besin kaybı yüksektir' },
+        'killi': { score: 55, stress: 'Düşük Havalanma & Sıkışma', enzyme: 'Düşük Dehidrogenaz', effect: 'agir tazyik ve oksijensiz ortam kök mikrobiyotasını baskılar' },
+        'tinli': { score: 85, stress: 'Dinamik Denge', enzyme: 'Optimal Amilaz', effect: 'ideal agregat yapısı mikrobiyal kolonizasyonu destekler' },
+        'killi-tinli': { score: 75, stress: 'Orta Havalanma', enzyme: 'Yüksek Proteaz', effect: 'besin tutma kapasitesi yüksek, mikrobiyal aktivite stabildir' },
+        'tuzlu-alkali': { score: 30, stress: 'Ozmotik Stres & Tuzlanma', enzyme: 'Baskılanmış Lipaz', effect: 'yüksek EC değerleri mikrobiyal hücre duvarlarını parçalar' }
+    },
+    climate: {
+        'Aşırı Kuraklık / Beklenmeyen Sıcak': { score: -25, insight: 'Hidrotermal stres enzim aktivitesini stabilize edemiyor.' },
+        'Normal / Mevsiminde': { score: 10, insight: 'İklim koşulları mikrobiyal florayı destekleyici düzeyde.' },
+        'Aşırı Yağışlı / Don Riski': { score: -15, insight: 'Anaerobik koşullar ve termal şok riski mevcut.' }
+    },
+    fert: {
+        'Yüksek (Sürekli)': { score: -20, insight: 'Sentetik yükleme doğal bakteri popülasyonunu %40 oranında baskılamış.' },
+        'Orta Seviye': { score: -5, insight: 'Dengeli kimyasal kullanımı, mikrobiyal geçiş sürecinde.' },
+        'Düşük / Tamamen Organik': { score: 15, insight: 'Organik karbon döngüsü mikrobiyom çeşitliliğini maksimize ediyor.' }
+    }
+};
+
+function calculateResilienceScore(data) {
+    let score = EXPERT_DATA.soil[data.soil]?.score || 60;
+    score += EXPERT_DATA.climate[data.climate]?.score || 0;
+    score += EXPERT_DATA.fert[data.fert]?.score || 0;
+    // Add small random variance for "AI flavor"
+    score += Math.floor(Math.random() * 8) - 4;
+    return Math.max(10, Math.min(100, score));
+}
+
+function getDynamicRecommendations(data, score) {
+    let recs = [];
+    const isDrought = data.climate?.includes('Kurak');
+    const isHighFert = data.fert?.includes('Yüksek');
+
+    // Kural tabanlı öneriler
+    if (isDrought) {
+        recs.push('<strong>Biyoteknolojik Müdahale:</strong> Pseudomonas kökenli ACC deaminaz aktivitesi yüksek rhizobakteriler (PGPR) toprağa aşılanmalıdır.');
+        recs.push('<strong>Stres Yönetimi:</strong> Nem kaybını önlemek için Leonardit kaynaklı (Hümik-Fulvik asit) uygulamasıyla su tutma kapasitesi artırılmalıdır.');
+    }
+    if (data.soil === 'kumlu') {
+        recs.push('<strong>Toprak İyileştirme:</strong> Besin sızıntısını önlemek ve mikrobiyal habitat sağlamak için "Biochar" (Biyo-kömür) entegrasyonu tavsiye edilir.');
+    }
+    if (data.soil === 'killi') {
+        recs.push('<strong>Havalandırma:</strong> Sıkışmayı kırmak ve anaerobik patojenleri engellemek için Mycorrhiza (Glomus spp.) inokülasyonu yapılmalıdır.');
+    }
+    if (isHighFert) {
+        recs.push('<strong>Mikrobiyal Çeşitlilik:</strong> Kimyasal şoku azaltmak için Azotobacter chroococcum inokülantları ile biyolojik azot fiksasyonu başlatılmalı, NPK kullanımı kademeli düşürülmelidir.');
+    }
+    if (score < 50) {
+        recs.push('<strong>Acil Eylem:</strong> Mikrobiyal "Compost Tea" (Kompost çayı) uygulamasıyla toprak florası hızla restore edilmelidir.');
+    }
+
+    // Default fallback if too few recs
+    if (recs.length < 3) recs.push('<strong>Sürdürülebilirlik:</strong> Mikrobiyom çeşitliliğini korumak için ürün rotasyonu ve sürümsüz tarım teknikleri değerlendirilmelidir.');
+
+    return recs.slice(0, 3).map(r => `<li>${r}</li>`).join('');
+}
+
 function showResults(data) {
     document.getElementById('loadingStep').classList.remove('active');
     document.getElementById('resultStep').classList.add('active');
     document.getElementById('progressFill').style.width = '0%';
 
-    const isDrought = data.climate?.includes('Kurak');
-    let baseScore = isDrought ? Math.floor(Math.random() * 20) + 40 : Math.floor(Math.random() * 20) + 65;
+    const score = calculateResilienceScore(data);
+    const soilInfo = EXPERT_DATA.soil[data.soil] || { stress: 'Genel Analiz', enzyme: 'Standart', effect: 'veriler işleniyor' };
+    const climateInfo = EXPERT_DATA.climate[data.climate] || { insight: 'Bölgesel veriler' };
+    const fertInfo = EXPERT_DATA.fert[data.fert] || { insight: '' };
+
     const scoreEl = document.getElementById('overallScore');
     const statusEl = document.getElementById('scoreStatus');
-    scoreEl.textContent = baseScore;
-    statusEl.className = 'status ' + (baseScore < 50 ? 'danger' : baseScore < 75 ? 'warning' : 'success');
-    statusEl.textContent = baseScore < 50 ? 'Kritik Seviye' : baseScore < 75 ? 'Gelişime Açık' : 'Optimal Sağlık';
-    document.getElementById('resStress').textContent = isDrought ? 'Yüksek Kuraklık ve Tuzlanma' : 'Nitrojen Eksikliği İhtimali';
-    document.getElementById('resEnzyme').textContent = isDrought ? 'Lipaz (Baskılanmış)' : 'Proteaz (Aktif)';
+    scoreEl.textContent = score;
+    statusEl.className = 'status ' + (score < 50 ? 'danger' : score < 75 ? 'warning' : 'success');
+    statusEl.textContent = score < 50 ? 'Kritik Seviye' : score < 75 ? 'Gelişime Açık' : 'Optimal Sağlık';
+
+    document.getElementById('resStress').textContent = soilInfo.stress;
+    document.getElementById('resEnzyme').textContent = soilInfo.enzyme;
 
     let locationStr = document.getElementById('resultLocation').textContent;
     let summaryHtml = `
         <p>${locationStr} bölgesi için gerçekleştirilen mikrobiyom adaptasyon ve toprak sağlığı analizleri tamamlanmıştır.</p>
-        <p>Bölgedeki ${isDrought ? 'şiddetli kuraklık etkileri' : 'mevcut iklim koşulları'}, toprak florasındaki faydalı enzimlerin aktivasyonunu <strong>%${Math.floor(Math.random() * 30) + 15} oranında etkilemektedir</strong>. Hesaplanan kümülatif İklim Direnç Skorunuz <strong>${baseScore}/100</strong> olarak ölçülmüştür.</p>
-        <p>Araştırma sonuçları, ilgili toprağın uzun vadeli sürdürülebilirliği için mikrobiyotal floranın spesifik inokülantlar (bakteri aşıları) ile desteklenmesi gerektiğine işaret etmektedir.</p>
+        <p>Analiz sonuçlarına göre; ${soilInfo.effect}. ${climateInfo.insight} ${fertInfo.insight}</p>
+        <p>Hesaplanan kümülatif İklim Direnç Skorunuz <strong>${score}/100</strong> olarak ölçülmüştür. Bu durum, toprağın mevcut stres faktörlerine karşı biyolojik tamponlama kapasitesini yansıtmaktadır.</p>
     `;
     let reportHtml = `
         <p><strong>RAPOR ÖZETİ — ${new Date().toLocaleDateString('tr-TR')}</strong></p>
@@ -417,29 +467,28 @@ function showResults(data) {
     `;
     document.getElementById('reportText').innerHTML = reportHtml;
 
-    let recs = `
-        <li><strong>Biyoteknolojik Müdahale:</strong> Pseudomonas kökenli ACC deaminaz aktivitesi yüksek rhizobakteriler toprağa aşılanmalıdır.</li>
-        <li><strong>Stres Yönetimi:</strong> Toprak yapısı göz önüne alındığında, yüzey buharlaşmasını önleyici organik malçlama uygulaması tavsiye edilir.</li>
-        <li><strong>Mikrobiyal Çeşitlilik:</strong> Phyto-ekstraksiyon kapasitesini artırmak için düşük dozlu leonardit (Hümik Fulvik asit) takviyesi yapın.</li>
-    `;
-    document.getElementById('recommendationsList').innerHTML = recs;
-    if (currentMarker) currentMarker.setPopupContent(`<b>Analiz Tamamlandı</b><br>Skor: ${baseScore}/100`).openPopup();
+    const recsHtml = getDynamicRecommendations(data, score);
+    document.getElementById('recommendationsList').innerHTML = recsHtml;
 
+    if (currentMarker) currentMarker.setPopupContent(`<b>Analiz Tamamlandı</b><br>Skor: ${score}/100`).openPopup();
+
+    // PDF Hazırlığı
     document.getElementById('pdf-date').textContent = new Date().toLocaleDateString('tr-TR');
     document.getElementById('pdf-id').textContent = 'MR-' + Math.floor(Math.random() * 90000 + 10000);
     document.getElementById('pdf-location').textContent = locationStr;
-    document.getElementById('pdf-type').textContent = data.type + ' üzerinden';
-    document.getElementById('pdf-score').textContent = baseScore;
-    document.getElementById('pdf-score').style.color = baseScore < 50 ? '#ef4444' : baseScore < 75 ? '#f59e0b' : '#22c55e';
-    document.getElementById('pdf-stress').textContent = isDrought ? 'Yüksek Kuraklık ve Tuzlanma' : 'Ortalama Stres, Olası Nitrojen Açığı';
+    document.getElementById('pdf-type').textContent = data.type;
+    document.getElementById('pdf-score').textContent = score;
+    document.getElementById('pdf-score').style.color = score < 50 ? '#A52A2A' : score < 75 ? '#CD853F' : '#2E8B57';
+    document.getElementById('pdf-stress').textContent = soilInfo.stress;
     document.getElementById('pdf-ai-summary').innerHTML = summaryHtml;
-    document.getElementById('pdf-recs').innerHTML = recs;
+    document.getElementById('pdf-recs').innerHTML = recsHtml;
 }
+
 
 function downloadPDF() {
     const element = document.getElementById('printable-report');
     const opt = {
-        margin: 10, filename: 'MicroResilience_Zirai_Rapor.pdf',
+        margin: 10, filename: 'MicroReso_Zirai_Rapor.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -484,7 +533,7 @@ function officialReferral() {
 // ────── Detaylı Chatbot Yanıt Motoru ──────
 const micoReplies = {
     selamlama: [
-        'Merhaba! Ben Mico 🌿 — MicroResilience AI\'nin toprak uzmanı asistanıyım. Toprağınızın sağlığı, analiz raporunuz, mikrobiyom yapısı veya iklim stres faktörleri hakkında bana soru sorabilirsiniz.',
+        'Merhaba! Ben Mico 🌿 — MicroReso\'nun toprak uzmanı asistanıyım. Toprağınızın sağlığı, analiz raporunuz, mikrobiyom yapısı veya iklim stres faktörleri hakkında bana soru sorabilirsiniz.',
         'Selam! Mico burada 👋 Araziyle ilgili aklınıza takılan her şeyi sorabilirsiniz — toprak pH\'ı, bakteri türleri, gübre seçimi, kuraklık yönetimi... Neyle başlayalım?',
         'Hoş geldiniz! 🌱 Ben Mico, mikrobiyom ve sürdürülebilir tarım konularında eğitimli bir AI asistanıyım. Size nasıl yardımcı olabilirim?'
     ],
@@ -682,7 +731,7 @@ function handleLogin(e) {
     if (!email || !pw) return;
     // Demo login simulation
     closeAuthModal();
-    showToast(`✅ Hoş geldiniz! ${email} ile giriş yapıldı.`);
+    showToast('✅ Hoş geldiniz! ' + email + ' ile giriş yapıldı.');
 }
 
 function handleRegister(e) {

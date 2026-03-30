@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MicroResilience AI | İklim Krizine Karşı Toprak Analizi</title>
-    <meta name="description" content="Yapay zeka destekli toprak mikrobiyomu analiz platformu. İklim değişikliğine karşı toprağınızın direncini keşfedin.">
+    <title>MicroReso | İklim Krizine Karşı Akıllı Toprak Analizi</title>
+    <meta name="description" content="Yapay zeka destekli toprak mikrobiyomu analiz platformu. MicroReso ile toprağınızın direncini keşfedin.">
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png">
@@ -25,7 +25,7 @@
     <!-- Header -->
     <header class="glass-header">
         <div class="logo">
-            <i class="fa-solid fa-leaf"></i> MicroResilience <span>AI</span>
+            <i class="fa-solid fa-leaf"></i> MicroReso
         </div>
         <nav>
             <ul>
@@ -42,9 +42,9 @@
         <div class="hero-content">
             <div class="hero-badge animate-up">
                 <i class="fa-solid fa-dna"></i>
-                <span>Yapay Zeka Destekli Mikrobiyom Platformu</span>
+                <span>Yapay Zeka Destekli Biyo-Direnç Platformu</span>
             </div>
-            <h1 class="animate-up">Toprağınızın İklim Direncini <br><span class="highlight gradient-text">Yapay Zeka</span> ile Keşfedin</h1>
+            <h1 class="animate-up">Toprağınızın İklim Direncini <br><span class="highlight gradient-text">MicroReso</span> ile Keşfedin</h1>
             <p class="animate-up delay-1">Kuraklık, tuzluluk ve iklim değişikliği etkilerine karşı mikrobiyom analiziyle toprağınızın ve bitkinizin sağlığını koruyun, geleceği güvenceye alın.</p>
             <div class="hero-buttons animate-up delay-2">
                 <a href="#" onclick="navigateTo('analysis')" class="btn-primary btn-glow"><i class="fa-solid fa-microscope"></i> Analiz Başlat</a>
@@ -86,7 +86,7 @@
 
     <!-- Info Section -->
     <section id="how-it-works" class="info-section page-section">
-        <h2 class="section-title">Neden MicroResilience AI?</h2>
+        <h2 class="section-title">Neden MicroReso?</h2>
         <div class="card-grid">
             <div class="info-card">
                 <i class="fa-solid fa-temperature-arrow-up"></i>
@@ -234,13 +234,13 @@
         </div>
     </section>
 
-    <!-- AUTH MODAL KALDIRILDI -->
+    <!-- AUTH MODAL -->
     <div style="display:none" id="authOverlay">
         <div class="auth-modal" id="authModal">
             <button class="auth-close" onclick="closeAuthModal()"><i class="fa-solid fa-xmark"></i></button>
             <div class="auth-logo">
                 <i class="fa-solid fa-leaf"></i>
-                <span>MicroResilience <strong>AI</strong></span>
+                <span>MicroReso <strong>AI</strong></span>
             </div>
             <div class="auth-tabs">
                 <button class="auth-tab active" id="loginTabBtn" onclick="switchAuthTab('login')">Giriş Yap</button>
@@ -332,7 +332,7 @@
                 <button class="close-chat" onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="chat-body" id="chatBody">
-                <div class="message ai-message">Merhaba! Ben Mico. 🌿 Toprak sağlığı, rapor sonuçlarınız veya kullanmanız gereken gübrelerle ilgili bana sorular sorabilirsiniz. Size nasıl yardımcı olabilirim?</div>
+                <div class="message ai-message">Merhaba! Ben Mico. 🌿 MicroReso asistanıyım. Toprak sağlığı, rapor sonuçlarınız veya kullanmanız gereken gübrelerle ilgili bana sorular sorabilirsiniz. Size nasıl yardımcı olabilirim?</div>
             </div>
             <div class="chat-input-area">
                 <input type="text" id="chatInput" placeholder="Soru sorun... (Örn: Raporumu açıkla)" onkeypress="handleChatPress(event)">
@@ -344,9 +344,9 @@
     <!-- Gizli PDF Rapor Şablonu -->
     <div id="pdf-container" style="position:absolute;left:-9999px;top:-9999px;z-index:-10;">
         <div id="printable-report" style="width:800px;padding:50px;background:white;color:#111;font-family:'Times New Roman',Times,serif;box-sizing:border-box;">
-            <div style="border-bottom:3px solid #0f766e;padding-bottom:15px;margin-bottom:30px;display:flex;justify-content:space-between;align-items:flex-end;">
+            <div style="border-bottom:3px solid #2E8B57;padding-bottom:15px;margin-bottom:30px;display:flex;justify-content:space-between;align-items:flex-end;">
                 <div>
-                    <h1 style="color:#0f766e;margin:0;font-size:26px;text-transform:uppercase;">MicroResilience AI</h1>
+                    <h1 style="color:#2E8B57;margin:0;font-size:26px;text-transform:uppercase;">MicroReso AI</h1>
                     <p style="margin:5px 0 0;color:#444;font-size:14px;font-weight:bold;">AKILLI LABORATUVAR & ZİRAİ ANALİZ SONUÇ RAPORU</p>
                 </div>
                 <div style="text-align:right;font-size:13px;color:#333;">
@@ -358,22 +358,22 @@
             <table style="width:100%;border-collapse:collapse;margin-bottom:30px;font-size:14px;">
                 <tr><td style="padding:10px;border:1px solid #ccc;background:#f4f4f4;width:35%;"><strong>Analiz Edilen Koordinat / Bölge:</strong></td><td style="padding:10px;border:1px solid #ccc;" id="pdf-location"></td></tr>
                 <tr><td style="padding:10px;border:1px solid #ccc;background:#f4f4f4;"><strong>Veri Kaynağı (Analiz Türü):</strong></td><td style="padding:10px;border:1px solid #ccc;" id="pdf-type"></td></tr>
-                <tr><td style="padding:10px;border:1px solid #ccc;background:#f4f4f4;"><strong>Genel İklim Direnç Skoru:</strong></td><td style="padding:10px;border:1px solid #ccc;"><strong style="font-size:20px;color:#ef4444;" id="pdf-score"></strong> / 100</td></tr>
-                <tr><td style="padding:10px;border:1px solid #ccc;background:#f4f4f4;"><strong>Tespit Edilen Baskın Stres:</strong></td><td style="padding:10px;border:1px solid #ccc;font-weight:bold;color:#b91c1c;" id="pdf-stress"></td></tr>
+                <tr><td style="padding:10px;border:1px solid #ccc;background:#f4f4f4;"><strong>Genel İklim Direnç Skoru:</strong></td><td style="padding:10px;border:1px solid #ccc;"><strong style="font-size:20px;color:#2E8B57;" id="pdf-score"></strong> / 100</td></tr>
+                <tr><td style="padding:10px;border:1px solid #ccc;background:#f4f4f4;"><strong>Tespit Edilen Baskın Stres:</strong></td><td style="padding:10px;border:1px solid #ccc;font-weight:bold;color:#A52A2A;" id="pdf-stress"></td></tr>
             </table>
             <h2 style="font-size:18px;border-bottom:1px solid #ccc;padding-bottom:5px;margin-bottom:15px;color:#222;">2. YAPAY ZEKA DEĞERLENDİRME ÖZETİ</h2>
-            <div style="background:#f1f8f6;padding:20px;border-left:4px solid #22c55e;margin-bottom:30px;line-height:1.6;font-size:14px;" id="pdf-ai-summary"></div>
+            <div style="background:#f1f8f6;padding:20px;border-left:4px solid #2E8B57;margin-bottom:30px;line-height:1.6;font-size:14px;" id="pdf-ai-summary"></div>
             <h2 style="font-size:18px;border-bottom:1px solid #ccc;padding-bottom:5px;margin-bottom:15px;color:#222;">3. BİYOTEKNOLOJİK & TARIMSAL EYLEM PLANI (ÖNERİLER)</h2>
             <ul style="line-height:1.8;margin-bottom:50px;font-size:14px;" id="pdf-recs"></ul>
             <div style="text-align:center;border-top:1px solid #ccc;padding-top:15px;font-size:11px;color:#666;font-style:italic;">
                 Bu evrak, sahadan girilen veriler ışığında teşhis algoritması ve Makine Öğrenmesi (AI) algoritmaları tarafından bilgi amaçlı üretilmiştir.<br>
-                Zirai ilaç veya tıbbi gübre reçetesi yerine geçmez. Doğrulamak için yerel ziraat kuruluşunuza başvurunuz. &copy; 2026 MicroResilience AI Raporlama Sistemi
+                Zirai ilaç veya tıbbi gübre reçetesi yerine geçmez. Doğrulamak için yerel ziraat kuruluşunuza başvurunuz. &copy; 2026 MicroReso AI Raporlama Sistemi
             </div>
         </div>
     </div>
 
     <footer>
-        <p>&copy; 2026 MicroResilience AI | İklim Krizine Karşı Sürdürülebilir Tarım</p>
+        <p>&copy; 2026 MicroReso | İklim Krizine Karşı Sürdürülebilir Tarım</p>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
