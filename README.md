@@ -32,6 +32,7 @@ Proje herhangi bir derleme (build) süreci gerektirmez. `index.html` dosyasını
 
 1. Depoyu klonlayın: `git clone https://github.com/naratiiiveee/googleai-micro-resilience-ai.git`
 2. `index.html` dosyasını tarayıcınızda açın.
+https://googleai-micro-resilience-ainew.vercel.app/
 
----
+
 *Bu proje, tarımsal danışmanlık yerine "bilgi amaçlı" bir akademik ve görsel prototip olarak kurgulanmıştır.*
